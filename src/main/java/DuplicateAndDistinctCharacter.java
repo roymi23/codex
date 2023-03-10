@@ -1,7 +1,4 @@
-import java.util.Arrays;
-import java.util.List;
-import java.util.Map;
-import java.util.Scanner;
+import java.util.*;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
@@ -19,6 +16,15 @@ public class DuplicateAndDistinctCharacter {
         Object[] duplicateChars = findDuplicateChars(givenString);
         System.out.println("Duplicated chars found in given string: " + Arrays.toString(duplicateChars));
 
+        System.out.println("First non duplicated character: " + findFirstNonDuplicatedCharacter(givenString));
+
+    }
+
+    private static String findFirstNonDuplicatedCharacter(String givenString) {
+
+        return Arrays.stream(givenString.split(""))
+                .collect(Collectors.groupingBy(Function.identity(), LinkedHashMap::new, Collectors.counting()))
+                .entrySet().stream().filter(i->i.getValue() == 1).findFirst().get().getKey();
     }
 
     private static Object[] findDuplicateChars(String givenString) {
@@ -34,10 +40,11 @@ public class DuplicateAndDistinctCharacter {
 
     private static Object[] findDistinctChars(String givenString) {
 
-        final Object[] objects = Arrays.stream(givenString.split(""))
-                .collect(Collectors.groupingBy(Function.identity(), Collectors.counting()))
-                .entrySet().stream().filter(i -> i.getValue() == 1).map(Map.Entry::getKey).toArray();
-        System.out.println("Result by grouping by: " + Arrays.toString(objects));
+        Object[] objects = givenString.chars()
+                .mapToObj(c->(char)c)
+                .collect(Collectors.groupingBy(c-> c, LinkedHashMap::new, Collectors.counting()))
+                .entrySet().stream().map(e->e.getKey()).toArray();
+        System.out.println("Distinct characters Result when using grouping by: " + Arrays.toString(objects));
 
         return Arrays.stream(givenString.split("")).distinct().toArray();
     }
